@@ -1,0 +1,301 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 860" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f87171"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4ade80"/>
+    </marker>
+    <marker id="arrow-yellow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#facc15"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#c084fc"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000040"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="860" fill="#0f172a"/>
+
+  <!-- Title -->
+  <text x="550" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#f1f5f9" letter-spacing="2">netwatch — Architecture</text>
+  <text x="550" y="58" text-anchor="middle" font-size="11" fill="#64748b">Packet capture · Threat detection · DNS sinkhole · pfctl blocking</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 1: INTERNET + NIC + SCAPY CAPTURE ENGINE           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- Internet cloud -->
+  <rect x="30" y="90" width="140" height="60" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="100" y="117" text-anchor="middle" font-size="13" fill="#94a3b8">🌐</text>
+  <text x="100" y="135" text-anchor="middle" font-size="11" fill="#94a3b8">Internet</text>
+
+  <!-- Arrow: Internet → NIC -->
+  <line x1="170" y1="120" x2="218" y2="120" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="194" y="113" text-anchor="middle" font-size="9" fill="#475569">packets</text>
+
+  <!-- NIC box -->
+  <rect x="220" y="90" width="140" height="60" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="290" y="117" text-anchor="middle" font-size="13" fill="#94a3b8">🖧</text>
+  <text x="290" y="135" text-anchor="middle" font-size="11" fill="#94a3b8">NIC (en0)</text>
+
+  <!-- Arrow: NIC → Scapy -->
+  <line x1="360" y1="120" x2="408" y2="120" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="384" y="113" text-anchor="middle" font-size="9" fill="#475569">/dev/bpf</text>
+
+  <!-- Scapy sniff() -->
+  <rect x="410" y="82" width="190" height="76" rx="10" fill="#0f2942" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+  <text x="505" y="105" text-anchor="middle" font-size="11" font-weight="bold" fill="#60a5fa">SCAPY sniff()</text>
+  <text x="505" y="121" text-anchor="middle" font-size="10" fill="#93c5fd">Capture Thread</text>
+  <text x="505" y="136" text-anchor="middle" font-size="9" fill="#475569">IPv4 · IPv6 · TCP · UDP · DNS</text>
+  <text x="505" y="149" text-anchor="middle" font-size="9" fill="#475569">raw BPF · promiscuous</text>
+
+  <!-- Arrow: Scapy → packet_handler -->
+  <line x1="600" y1="120" x2="648" y2="120" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="624" y="113" text-anchor="middle" font-size="9" fill="#3b82f6">prn=</text>
+
+  <!-- packet_handler() -->
+  <rect x="650" y="82" width="190" height="76" rx="10" fill="#0f2942" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+  <text x="745" y="105" text-anchor="middle" font-size="11" font-weight="bold" fill="#60a5fa">packet_handler()</text>
+  <text x="745" y="121" text-anchor="middle" font-size="10" fill="#93c5fd">Main Dispatch</text>
+  <text x="745" y="136" text-anchor="middle" font-size="9" fill="#475569">classify src/dst</text>
+  <text x="745" y="149" text-anchor="middle" font-size="9" fill="#475569">route to subsystems</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 2: THREE SUBSYSTEMS FROM packet_handler            -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- Subsystem 1: DNS Sinkhole -->
+  <rect x="80" y="230" width="200" height="150" rx="10" fill="#1a0a2e" stroke="#a855f7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="180" y="254" text-anchor="middle" font-size="11" font-weight="bold" fill="#c084fc">🕳 DNS SINKHOLE</text>
+  <line x1="100" y1="262" x2="260" y2="262" stroke="#4c1d95" stroke-width="1"/>
+  <text x="180" y="278" text-anchor="middle" font-size="10" fill="#a78bfa">UDP port 53 queries</text>
+  <text x="180" y="293" text-anchor="middle" font-size="10" fill="#a78bfa">from this machine only</text>
+  <text x="180" y="312" text-anchor="middle" font-size="9" fill="#7c3aed">↓ check _sinkhole_domains</text>
+  <text x="180" y="327" text-anchor="middle" font-size="9" fill="#7c3aed">↓ forge DNS response</text>
+  <text x="180" y="342" text-anchor="middle" font-size="9" fill="#c084fc" font-weight="bold">→ send 0.0.0.0 / NXDOMAIN</text>
+  <text x="180" y="357" text-anchor="middle" font-size="9" fill="#475569">scapy send() back to src</text>
+  <text x="180" y="372" text-anchor="middle" font-size="9" fill="#475569">counter: _sh_sunk_count++</text>
+
+  <!-- Subsystem 2: Traffic Counters -->
+  <rect x="340" y="230" width="200" height="150" rx="10" fill="#0a1f0a" stroke="#22c55e" stroke-width="2" filter="url(#shadow)"/>
+  <text x="440" y="254" text-anchor="middle" font-size="11" font-weight="bold" fill="#4ade80">📊 TRAFFIC COUNTERS</text>
+  <line x1="360" y1="262" x2="520" y2="262" stroke="#14532d" stroke-width="1"/>
+  <text x="440" y="278" text-anchor="middle" font-size="10" fill="#86efac">TLS SNI extraction</text>
+  <text x="440" y="293" text-anchor="middle" font-size="9" fill="#475569">ClientHello → hostname</text>
+  <text x="440" y="312" text-anchor="middle" font-size="10" fill="#86efac">Inbound IP tracking</text>
+  <text x="440" y="327" text-anchor="middle" font-size="9" fill="#475569">external → _is_mine(dst)</text>
+  <text x="440" y="345" text-anchor="middle" font-size="10" fill="#86efac">Outbound IP tracking</text>
+  <text x="440" y="360" text-anchor="middle" font-size="9" fill="#475569">_is_mine(src) → external</text>
+  <text x="440" y="375" text-anchor="middle" font-size="9" fill="#475569">Counters guarded by _lock</text>
+
+  <!-- Subsystem 3: Threat Check Queue -->
+  <rect x="600" y="230" width="200" height="150" rx="10" fill="#1f1500" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="254" text-anchor="middle" font-size="11" font-weight="bold" fill="#fbbf24">🔎 CHECK QUEUE</text>
+  <line x1="620" y1="262" x2="780" y2="262" stroke="#78350f" stroke-width="1"/>
+  <text x="700" y="278" text-anchor="middle" font-size="10" fill="#fde68a">_check_queue (deque)</text>
+  <text x="700" y="293" text-anchor="middle" font-size="9" fill="#475569">new hosts + IPs enqueued</text>
+  <text x="700" y="312" text-anchor="middle" font-size="10" fill="#fde68a">_check_worker() thread</text>
+  <text x="700" y="327" text-anchor="middle" font-size="9" fill="#475569">polls every 50ms</text>
+  <text x="700" y="345" text-anchor="middle" font-size="10" fill="#fde68a">Async — never blocks</text>
+  <text x="700" y="360" text-anchor="middle" font-size="9" fill="#475569">packet_handler()</text>
+  <text x="700" y="375" text-anchor="middle" font-size="9" fill="#475569">separated by _check_lock</text>
+
+  <!-- Arrows: packet_handler → subsystems -->
+  <!-- → DNS Sinkhole -->
+  <line x1="745" y1="158" x2="745" y2="195" stroke="#a855f7" stroke-width="1.5"/>
+  <line x1="745" y1="195" x2="180" y2="195" stroke="#a855f7" stroke-width="1.5"/>
+  <line x1="180" y1="195" x2="180" y2="228" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+  <text x="460" y="190" text-anchor="middle" font-size="9" fill="#a855f7">UDP port 53 + QR=0</text>
+
+  <!-- → Traffic Counters -->
+  <line x1="745" y1="158" x2="745" y2="210" stroke="#22c55e" stroke-width="1.5"/>
+  <line x1="745" y1="210" x2="440" y2="210" stroke="#22c55e" stroke-width="1.5"/>
+  <line x1="440" y1="210" x2="440" y2="228" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <text x="592" y="205" text-anchor="middle" font-size="9" fill="#22c55e">all packets</text>
+
+  <!-- → Check Queue -->
+  <line x1="745" y1="158" x2="745" y2="228" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow-yellow)"/>
+  <text x="760" y="200" font-size="9" fill="#f59e0b">new hosts/IPs</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 3: THREAT DETECTION ENGINE                         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- Threat detection box -->
+  <rect x="530" y="430" width="330" height="185" rx="10" fill="#1f1500" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+  <text x="695" y="454" text-anchor="middle" font-size="11" font-weight="bold" fill="#fbbf24">⚡ THREAT DETECTION ENGINE</text>
+  <line x1="550" y1="462" x2="840" y2="462" stroke="#78350f" stroke-width="1"/>
+
+  <!-- 4 heuristic pills -->
+  <rect x="545" y="470" width="140" height="28" rx="5" fill="#292202" stroke="#854d0e" stroke-width="1"/>
+  <text x="615" y="489" text-anchor="middle" font-size="9" fill="#fde68a">🔴 Threat Feed Match</text>
+
+  <rect x="700" y="470" width="150" height="28" rx="5" fill="#292202" stroke="#854d0e" stroke-width="1"/>
+  <text x="775" y="489" text-anchor="middle" font-size="9" fill="#fde68a">🟠 DGA Detection</text>
+
+  <rect x="545" y="506" width="140" height="28" rx="5" fill="#292202" stroke="#854d0e" stroke-width="1"/>
+  <text x="615" y="525" text-anchor="middle" font-size="9" fill="#fde68a">🟠 DNS Tunnel Signal</text>
+
+  <rect x="700" y="506" width="150" height="28" rx="5" fill="#292202" stroke="#854d0e" stroke-width="1"/>
+  <text x="775" y="525" text-anchor="middle" font-size="9" fill="#fde68a">🟠 Suspicious TLD</text>
+
+  <rect x="545" y="542" width="140" height="28" rx="5" fill="#292202" stroke="#854d0e" stroke-width="1"/>
+  <text x="615" y="561" text-anchor="middle" font-size="9" fill="#fde68a">🔴 .arpa Abuse</text>
+
+  <rect x="700" y="542" width="150" height="28" rx="5" fill="#292202" stroke="#854d0e" stroke-width="1"/>
+  <text x="775" y="561" text-anchor="middle" font-size="9" fill="#fde68a">🟡 Deep Subdomain</text>
+
+  <line x1="550" y1="578" x2="840" y2="578" stroke="#78350f" stroke-width="1"/>
+  <text x="695" y="594" text-anchor="middle" font-size="9" fill="#475569">CRITICAL/HIGH → _block_ip()     MEDIUM → alert only</text>
+  <text x="695" y="608" text-anchor="middle" font-size="9" fill="#475569">results written to _threats[]  via _threat_lock</text>
+
+  <!-- Arrow: Check Queue → Threat Detection -->
+  <line x1="700" y1="380" x2="700" y2="428" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow-yellow)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 3 LEFT: FEED LOADER                                -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <rect x="60" y="430" width="420" height="185" rx="10" fill="#0d1f0d" stroke="#16a34a" stroke-width="2" filter="url(#shadow)"/>
+  <text x="270" y="454" text-anchor="middle" font-size="11" font-weight="bold" fill="#4ade80">📡 FEED LOADERS (background threads)</text>
+  <line x1="80" y1="462" x2="460" y2="462" stroke="#14532d" stroke-width="1"/>
+
+  <!-- URLhaus -->
+  <rect x="75" y="470" width="185" height="50" rx="6" fill="#0a1a0a" stroke="#15803d" stroke-width="1"/>
+  <text x="167" y="490" text-anchor="middle" font-size="10" font-weight="bold" fill="#86efac">URLhaus Feed</text>
+  <text x="167" y="505" text-anchor="middle" font-size="9" fill="#475569">abuse.ch · malware domains</text>
+  <text x="167" y="518" text-anchor="middle" font-size="9" fill="#475569">refresh every 1 hour</text>
+
+  <!-- Emerging Threats -->
+  <rect x="275" y="470" width="185" height="50" rx="6" fill="#0a1a0a" stroke="#15803d" stroke-width="1"/>
+  <text x="367" y="490" text-anchor="middle" font-size="10" font-weight="bold" fill="#86efac">Emerging Threats</text>
+  <text x="367" y="505" text-anchor="middle" font-size="9" fill="#475569">compromised IPs</text>
+  <text x="367" y="518" text-anchor="middle" font-size="9" fill="#475569">refresh every 1 hour</text>
+
+  <!-- Steven Black -->
+  <rect x="75" y="530" width="185" height="50" rx="6" fill="#0a1a0a" stroke="#15803d" stroke-width="1"/>
+  <text x="167" y="550" text-anchor="middle" font-size="10" font-weight="bold" fill="#86efac">Steven Black Hosts</text>
+  <text x="167" y="565" text-anchor="middle" font-size="9" fill="#475569">~76k ad/tracker domains</text>
+  <text x="167" y="578" text-anchor="middle" font-size="9" fill="#475569">refresh every 24 hours</text>
+
+  <!-- rDNS -->
+  <rect x="275" y="530" width="185" height="50" rx="6" fill="#0a1a0a" stroke="#15803d" stroke-width="1"/>
+  <text x="367" y="550" text-anchor="middle" font-size="10" font-weight="bold" fill="#86efac">Reverse DNS</text>
+  <text x="367" y="565" text-anchor="middle" font-size="9" fill="#475569">async gethostbyaddr()</text>
+  <text x="367" y="578" text-anchor="middle" font-size="9" fill="#475569">TTL cache 5 min</text>
+
+  <text x="270" y="605" text-anchor="middle" font-size="9" fill="#475569">All loaders run as daemon threads · results written to shared sets under _threat_lock / _sh_lock</text>
+
+  <!-- Arrow feed → threat detection (dashed) -->
+  <line x1="480" y1="522" x2="528" y2="522" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-green)"/>
+  <text x="504" y="515" text-anchor="middle" font-size="9" fill="#16a34a">feeds</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 4: pfctl BLOCKER + TICKER + UI RENDERER            -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- pfctl -->
+  <rect x="60" y="670" width="200" height="110" rx="10" fill="#1f0a0a" stroke="#ef4444" stroke-width="2" filter="url(#shadow)"/>
+  <text x="160" y="693" text-anchor="middle" font-size="11" font-weight="bold" fill="#f87171">🚫 pfctl BLOCKER</text>
+  <line x1="80" y1="700" x2="240" y2="700" stroke="#7f1d1d" stroke-width="1"/>
+  <text x="160" y="716" text-anchor="middle" font-size="9" fill="#fca5a5">anchor: netwatch</text>
+  <text x="160" y="731" text-anchor="middle" font-size="9" fill="#475569">block drop quick from IP</text>
+  <text x="160" y="746" text-anchor="middle" font-size="9" fill="#475569">block drop quick to IP</text>
+  <text x="160" y="761" text-anchor="middle" font-size="9" fill="#475569">rebuilt atomically on change</text>
+  <text x="160" y="774" text-anchor="middle" font-size="9" fill="#475569">flushed on Ctrl-C exit</text>
+
+  <!-- Ticker -->
+  <rect x="300" y="670" width="200" height="110" rx="10" fill="#0f1a2e" stroke="#38bdf8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="400" y="693" text-anchor="middle" font-size="11" font-weight="bold" fill="#7dd3fc">⏱ TICKER</text>
+  <line x1="320" y1="700" x2="480" y2="700" stroke="#0c4a6e" stroke-width="1"/>
+  <text x="400" y="716" text-anchor="middle" font-size="9" fill="#bae6fd">1Hz background thread</text>
+  <text x="400" y="731" text-anchor="middle" font-size="9" fill="#475569">snapshots _cur_bytes</text>
+  <text x="400" y="746" text-anchor="middle" font-size="9" fill="#475569">and _cur_pkts each second</text>
+  <text x="400" y="761" text-anchor="middle" font-size="9" fill="#475569">appends to 60-slot deques</text>
+  <text x="400" y="776" text-anchor="middle" font-size="9" fill="#475569">powers sparkline graphs</text>
+
+  <!-- CLI Renderer -->
+  <rect x="540" y="670" width="320" height="110" rx="10" fill="#0a0f1e" stroke="#818cf8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="693" text-anchor="middle" font-size="11" font-weight="bold" fill="#a5b4fc">🖥  CLI RENDERER (blessed)</text>
+  <line x1="560" y1="700" x2="840" y2="700" stroke="#312e81" stroke-width="1"/>
+  <text x="700" y="716" text-anchor="middle" font-size="9" fill="#c7d2fe">draw() · 1Hz main loop</text>
+  <text x="700" y="731" text-anchor="middle" font-size="9" fill="#475569">snapshots all state under locks</text>
+  <text x="700" y="746" text-anchor="middle" font-size="9" fill="#475569">sparklines · bar graphs · tables</text>
+  <text x="700" y="761" text-anchor="middle" font-size="9" fill="#475569">threat panel · sinkhole panel</text>
+  <text x="700" y="776" text-anchor="middle" font-size="9" fill="#475569">single sys.stdout.write() → no flicker</text>
+
+  <!-- Arrows into row 4 -->
+  <!-- Threat detection → pfctl -->
+  <line x1="620" y1="615" x2="620" y2="645" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="620" y1="645" x2="160" y2="645" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="160" y1="645" x2="160" y2="668" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrow-red)"/>
+  <text x="390" y="640" text-anchor="middle" font-size="9" fill="#ef4444">CRITICAL/HIGH → _block_ip()</text>
+
+  <!-- Traffic counters → Ticker/Renderer -->
+  <line x1="440" y1="380" x2="440" y2="640" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="440" y1="640" x2="400" y2="640" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="400" y1="640" x2="400" y2="668" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+  <!-- All subsystems → Renderer -->
+  <line x1="860" y1="522" x2="920" y2="522" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="920" y1="522" x2="920" y2="655" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="920" y1="655" x2="700" y2="655" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="700" y1="655" x2="700" y2="668" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+  <text x="930" y="590" font-size="9" fill="#818cf8" transform="rotate(90,930,590)">all state → UI</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LEGEND                                                 -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="880" y="82" width="200" height="220" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="980" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#94a3b8">LEGEND</text>
+  <line x1="895" y1="110" x2="1065" y2="110" stroke="#1e293b" stroke-width="1"/>
+
+  <line x1="900" y1="128" x2="940" y2="128" stroke="#3b82f6" stroke-width="2"/>
+  <text x="948" y="132" font-size="10" fill="#94a3b8">Packet flow</text>
+
+  <line x1="900" y1="150" x2="940" y2="150" stroke="#a855f7" stroke-width="2"/>
+  <text x="948" y="154" font-size="10" fill="#94a3b8">DNS sinkhole path</text>
+
+  <line x1="900" y1="172" x2="940" y2="172" stroke="#22c55e" stroke-width="2"/>
+  <text x="948" y="176" font-size="10" fill="#94a3b8">Traffic counting</text>
+
+  <line x1="900" y1="194" x2="940" y2="194" stroke="#f59e0b" stroke-width="2"/>
+  <text x="948" y="198" font-size="10" fill="#94a3b8">Threat queue</text>
+
+  <line x1="900" y1="216" x2="940" y2="216" stroke="#ef4444" stroke-width="2"/>
+  <text x="948" y="220" font-size="10" fill="#94a3b8">Block action</text>
+
+  <line x1="900" y1="238" x2="940" y2="238" stroke="#818cf8" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="948" y="242" font-size="10" fill="#94a3b8">State read (UI/feeds)</text>
+
+  <line x1="900" y1="260" x2="940" y2="260" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="948" y="264" font-size="10" fill="#94a3b8">Feed data</text>
+
+  <text x="980" y="288" text-anchor="middle" font-size="9" fill="#475569">All shared state uses</text>
+  <text x="980" y="300" text-anchor="middle" font-size="9" fill="#475569">dedicated threading.Lock()</text>
+
+  <!-- Thread count badge -->
+  <rect x="880" y="320" width="200" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="980" y="342" text-anchor="middle" font-size="11" font-weight="bold" fill="#94a3b8">THREADS</text>
+  <line x1="895" y1="349" x2="1065" y2="349" stroke="#1e293b" stroke-width="1"/>
+  <text x="980" y="366" text-anchor="middle" font-size="9" fill="#64748b">sniff()       — capture</text>
+  <text x="980" y="381" text-anchor="middle" font-size="9" fill="#64748b">ticker()      — 1Hz counter</text>
+  <text x="980" y="396" text-anchor="middle" font-size="9" fill="#64748b">_check_worker — threat scan</text>
+  <text x="980" y="408" text-anchor="middle" font-size="9" fill="#64748b">_feed_loop    — threat feeds</text>
+  <text x="980" y="398" text-anchor="middle" font-size="9" fill="#64748b"></text>
+
+  <!-- Thread badges continued -->
+  <rect x="880" y="422" width="200" height="75" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="980" y="440" text-anchor="middle" font-size="9" fill="#64748b">_adblock_loop — ad feeds</text>
+  <text x="980" y="455" text-anchor="middle" font-size="9" fill="#64748b">_sinkhole_dns — per query</text>
+  <text x="980" y="470" text-anchor="middle" font-size="9" fill="#64748b">_rdns_lookup  — per IP</text>
+  <text x="980" y="485" text-anchor="middle" font-size="9" fill="#64748b">main loop     — UI draw</text>
+
+</svg>
