@@ -44,7 +44,11 @@ A real-time CLI network monitor for macOS with threat detection, automatic IP bl
 - **⛔ visual indicators** — blocked IPs are tagged inline in the traffic columns
 
 ---
+## Architecture
 
+![netwatch architecture](architecture.svg)
+
+---
 ## Requirements
 
 | Requirement | Notes |
